@@ -12,9 +12,7 @@ export default async function (
             try {
                 const limit = request.query.limit ?? 10
                 const offset = request.query.offset ?? 0
-
                 const result = await fastify.listDevices(limit, offset)
-
                 return reply.send(result)
             } catch (error) {
                 request.log.error(error)

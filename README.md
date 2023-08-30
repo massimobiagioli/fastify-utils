@@ -2,9 +2,33 @@
 
 ## Pager
 
-### ArrayAdapter
+Use case: list all devices paginated
 
-Feature:
+Route:
+
+```typescript
+export default async function (
+    fastify: FastifyInstance,
+    _opts: FastifyPluginOptions,
+): Promise<void> {
+    fastify.get<{ Querystring: DeviceRequestDtoType, Reply: PaginatedResult<DeviceDtoType> }>(
+        '/',
+        async (request, reply) => {
+            try {
+                const limit = request.query.limit ?? 10
+                const offset = request.query.offset ?? 0
+                const result = await fastify.listDevices(limit, offset)
+                return reply.send(result)
+            } catch (error) {
+                request.log.error(error)
+                return reply.code(500).send()
+            }
+        },
+    )
+}
+```
+
+Feature `listDevices` that uses an ArrayAdapter to paginate the result:
 
 ```typescript
 async function listDevicesPlugin(
@@ -24,28 +48,3 @@ async function listDevicesPlugin(
 export default fp(listDevicesPlugin)
 ```
 
-Route (that uses the feature):
-
-```typescript
-export default async function (
-    fastify: FastifyInstance,
-    _opts: FastifyPluginOptions,
-): Promise<void> {
-    fastify.get<{ Querystring: DeviceRequestDtoType, Reply: PaginatedResult<DeviceDtoType> }>(
-        '/',
-        async (request, reply) => {
-            try {
-                const limit = request.query.limit ?? 10
-                const offset = request.query.offset ?? 0
-                
-                const result = await fastify.listDevices(limit, offset)
-                
-                return reply.send(result)
-            } catch (error) {
-                request.log.error(error)
-                return reply.code(500).send()
-            }
-        },
-    )
-}
-```
