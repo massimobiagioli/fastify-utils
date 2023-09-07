@@ -1,4 +1,4 @@
-export type PaginatedResult<T> = {
-    total: number
+export type DynamoDBPaginatedResult<T> = {
     items: T[]
+    lastKey?: string | undefined
 }
